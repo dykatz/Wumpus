@@ -14,6 +14,7 @@ namespace HuntTheWumpus
         static Random r = new Random(DateTime.Now.Second);
         bool enabled = false;
         bool active = false;
+        ushort openConnections = 3;
 
         public Node(int id)
             : base(50)
@@ -30,43 +31,19 @@ namespace HuntTheWumpus
             if (!Connections.Contains(n))
             {
                 Connections.Add(n);
+                openConnections--;
                 n.AddConnection(this);
             }
         }
 
         public void GenerateRandomConnections()
         {
-            List<int> takenKeys = new List<int>();
-
-            for (int i = 0; i < Neighbors.Count; i++)
-                if (Connections.Contains(Neighbors[i]))
-                    takenKeys.Add(i);
-
-            while (Connections.Count < 3)
+            while (Neighbors.Count > 0 && openConnections > 0)
             {
-                int q;
-
-                if (r.Next(0, 1) == 1)
-                    q = 0;
-                else
-                    q = 5;
-
-                while (Neighbors[q].Connections.Count >= 3 || takenKeys.Contains(q))
-                {
-                    if (q > 5)
-                        q = 0;
-
-                    if (q < 0)
-                        q = 5;
-
-                    if (q == 0)
-                        q++;
-                    else
-                        q--;
-                }
-
-                takenKeys.Add(q);
-                AddConnection(Neighbors[q]);
+                var lookingAt = Neighbors[r.Next(0, Neighbors.Count - 1)];
+                if (lookingAt.openConnections > 0)
+                    AddConnection(lookingAt);
+                Neighbors.Remove(lookingAt);
             }
         }
 

@@ -88,6 +88,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnimatedSprite.cs" />
     <Compile Include="GameControl.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />

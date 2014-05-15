@@ -25,34 +25,8 @@ namespace HuntTheWumpus
         {
             win = win_;
 
-            for (int i = 0; i < 30; i++) // Create Nodes
-            {
-                Node n = new Node(i);
-                n.Position = new Vector2f((i % 6 + 1) * 120, (float)Math.Floor(i / 6.0) * 120 + (i % 2) * 60);
-                Nodes.Add(n);
-            }
-
-            for (int i = 0; i < Nodes.Count; i++) // Create Neighbors
-            {
-                Nodes[i].Neighbors.Add(Nodes[i / 6 == 0 ? i + 24 : i - 6]);
-                Nodes[i].Neighbors.Add(Nodes[i / 6 == 4 ? i - 24 : i + 6]);
-                Nodes[i].Neighbors.Add(Nodes[i - 1 < 0 ? Nodes.Count - 1 : i - 1]);
-                Nodes[i].Neighbors.Add(Nodes[i + 1 >= Nodes.Count ? 0 : i + 1]);
-
-                if (i % 2 == 0 & i % 6 != 0)
-                    Nodes[i].Neighbors.Add(Nodes[i < 7 ? i + 23 : i - 7]);
-                else
-                    Nodes[i].Neighbors.Add(Nodes[i >= 25 ? i - 25 : i + 5]);
-
-                if (i % 2 == 0 | i % 6 == 5)
-                    Nodes[i].Neighbors.Add(Nodes[i < 5 ? i + 25 : i - 5]);
-                else
-                    Nodes[i].Neighbors.Add(Nodes[i >= 23 ? i - 23 : i + 7]);
-            }
-
-            foreach (var i in Nodes)
-                i.GenerateRandomConnections();
-
+            GenerateMap();
+            
             SetActive(r.Next(0, 29));
 
             player.FillColor = Color.Blue;
@@ -109,14 +83,55 @@ namespace HuntTheWumpus
                             i / 6 == 0 & j.Id / 6 == 4 ? -600 : (i / 6 == 4 & j.Id / 6 == 0 ? 600 : 0));
 
                         Vertex[] ar = new Vertex[2];
-                        ar[0] = new Vertex(Nodes[i].Position + offset);
-                        ar[1] = new Vertex(j.Position + oPoint + offset);
+
+                        if (j.Active || Nodes[i].Active)
+                        {
+                            ar[0] = new Vertex(Nodes[i].Position + offset, Color.Blue);
+                            ar[1] = new Vertex(j.Position + oPoint + offset, Color.Blue);
+                        }
+                        else
+                        {
+                            ar[0] = new Vertex(Nodes[i].Position + offset);
+                            ar[1] = new Vertex(j.Position + oPoint + offset);
+                        }
+
                         win.Draw(ar, PrimitiveType.Lines);
                     }
                 }
             }
 
             win.Draw(player);
+        }
+
+        void GenerateMap()
+        {
+            for (int i = 0; i < 30; i++) // Create Nodes
+            {
+                Node n = new Node(i);
+                n.Position = new Vector2f((i % 6 + 1) * 120, (float)Math.Floor(i / 6.0) * 120 + (i % 2) * 60);
+                Nodes.Add(n);
+            }
+
+            for (int i = 0; i < Nodes.Count; i++) // Create Neighbors
+            {
+                Nodes[i].Neighbors.Add(Nodes[i / 6 == 0 ? i + 24 : i - 6]);
+                Nodes[i].Neighbors.Add(Nodes[i / 6 == 4 ? i - 24 : i + 6]);
+                Nodes[i].Neighbors.Add(Nodes[i - 1 < 0 ? Nodes.Count - 1 : i - 1]);
+                Nodes[i].Neighbors.Add(Nodes[i + 1 >= Nodes.Count ? 0 : i + 1]);
+
+                if (i % 2 == 0 & i % 6 != 0)
+                    Nodes[i].Neighbors.Add(Nodes[i < 7 ? i + 23 : i - 7]);
+                else
+                    Nodes[i].Neighbors.Add(Nodes[i >= 25 ? i - 25 : i + 5]);
+
+                if (i % 2 == 0 | i % 6 == 5)
+                    Nodes[i].Neighbors.Add(Nodes[i < 5 ? i + 25 : i - 5]);
+                else
+                    Nodes[i].Neighbors.Add(Nodes[i >= 23 ? i - 23 : i + 7]);
+            }
+
+            foreach (var i in Nodes)
+                i.GenerateRandomConnections();
         }
     }
 }
