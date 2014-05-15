@@ -9,12 +9,15 @@ namespace HuntTheWumpus
 {
     class GameControl
     {
+        RenderWindow win;
         List<Node> Nodes = new List<Node>();
         static Vector2f offset = new Vector2f(-50, 50);
         int ActiveIndex = 0;
 
-        public GameControl()
+        public GameControl(RenderWindow win_)
         {
+            win = win_;
+
             for (int i = 0; i < 30; i++) // Create Nodes
             {
                 Node n = new Node(i);
@@ -48,18 +51,35 @@ namespace HuntTheWumpus
 
         void SetActive(int id)
         {
+            Nodes[ActiveIndex].Active = false;
             Nodes[id].Active = true;
             ActiveIndex = id;
         }
 
         public void Update(double dt)
         {
+            foreach (var n in Nodes[ActiveIndex].Connections)
+            {
+                Vector2f distanceVector = new Vector2f(n.Position.X - Mouse.GetPosition(win).X - 50, n.Position.Y - Mouse.GetPosition(win).Y + 50);
+                
+                if (n.Radius * n.Radius > distanceVector.X * distanceVector.X + distanceVector.Y * distanceVector.Y)
+                {
+                    n.OutlineThickness = 2;
+
+                    if (Mouse.IsButtonPressed(Mouse.Button.Left))
+                        SetActive(n.Id);
+                }
+                else
+                {
+                    n.OutlineThickness = 0;
+                }
+            }
         }
 
-        public void Draw(ref RenderWindow window)
+        public void Draw()
         {
             foreach (var i in Nodes)
-                window.Draw(i);
+                win.Draw(i);
 
             for (int i = 0; i < Nodes.Count; i++)
             {
@@ -84,7 +104,7 @@ namespace HuntTheWumpus
                         //ar[1] = new Vertex(Nodes[i].Position + offset - oRect);
                         ar[1] = new Vertex(j.Position + oPoint + offset /*- oRect*/);
                         //ar[3] = new Vertex(j.Position + oPoint + offset + oRect);
-                        window.Draw(ar, PrimitiveType.Lines);
+                        win.Draw(ar, PrimitiveType.Lines);
                     }
                 }
             }

@@ -82,11 +82,15 @@ namespace HuntTheWumpus
                 active = value;
                 if (value)
                 {
-                    OutlineThickness = 1;
+                    OutlineThickness = 2;
+                    OutlineColor = Color.Blue;
                     Enabled = true;
                 }
                 else
+                {
                     OutlineThickness = 0;
+                    OutlineColor = Color.White;
+                }
             }
         }
     }
