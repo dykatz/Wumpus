@@ -86,9 +86,7 @@ namespace HuntTheWumpus
                     }
                 }
                 else
-                {
                     n.OutlineThickness = 0;
-                }
             }
 
             if (playerTween != null)
@@ -110,19 +108,9 @@ namespace HuntTheWumpus
                             i % 6 == 0 & j.Id % 6 == 5 ? -720 : (i % 6 == 5 & j.Id % 6 == 0 ? 720 : 0),
                             i / 6 == 0 & j.Id / 6 == 4 ? -600 : (i / 6 == 4 & j.Id / 6 == 0 ? 600 : 0));
 
-                        /*Vector2f oRect = oPoint - Nodes[i].Position;
-                        float oRectLength = (float)Math.Sqrt((double)(oRect.X * oRect.X + oRect.Y * oRect.Y));
-                        float ty = oRect.Y;
-                        oRect.Y = oRect.X;
-                        oRect.X = -ty;
-                        oRect.X /= oRectLength;
-                        oRect.Y /= oRectLength;*/
-
                         Vertex[] ar = new Vertex[2];
-                        ar[0] = new Vertex(Nodes[i].Position + offset /*+ oRect*/);
-                        //ar[1] = new Vertex(Nodes[i].Position + offset - oRect);
-                        ar[1] = new Vertex(j.Position + oPoint + offset /*- oRect*/);
-                        //ar[3] = new Vertex(j.Position + oPoint + offset + oRect);
+                        ar[0] = new Vertex(Nodes[i].Position + offset);
+                        ar[1] = new Vertex(j.Position + oPoint + offset);
                         win.Draw(ar, PrimitiveType.Lines);
                     }
                 }

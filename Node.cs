@@ -44,9 +44,26 @@ namespace HuntTheWumpus
 
             while (Connections.Count < 3)
             {
-                int q = 0;
-                do q++; //= r.Next(Neighbors.Count); // Random generation is really slow right now
-                while (Neighbors[q].Connections.Count >= 3 || takenKeys.Contains(q));
+                int q;
+
+                if (r.Next(0, 1) == 1)
+                    q = 0;
+                else
+                    q = 5;
+
+                while (Neighbors[q].Connections.Count >= 3 || takenKeys.Contains(q))
+                {
+                    if (q > 5)
+                        q = 0;
+
+                    if (q < 0)
+                        q = 5;
+
+                    if (q == 0)
+                        q++;
+                    else
+                        q--;
+                }
 
                 takenKeys.Add(q);
                 AddConnection(Neighbors[q]);
