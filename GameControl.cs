@@ -15,7 +15,11 @@ namespace HuntTheWumpus
         static Vector2f offset = new Vector2f(-50, 50);
         static Random r = new Random(DateTime.Now.Second);
 
+        CircleShape player = new CircleShape(30);
+
         int ActiveIndex = 0;
+
+        TweenVector2f playerTween;
 
         public GameControl(RenderWindow win_)
         {
@@ -50,6 +54,12 @@ namespace HuntTheWumpus
                 i.GenerateRandomConnections();
 
             SetActive(r.Next(0, 29));
+
+            player.FillColor = Color.Blue;
+            player.OutlineColor = Color.White;
+            player.OutlineThickness = 2;
+            player.SetPointCount(5);
+            player.Position = Nodes[ActiveIndex].Position + new Vector2f(-80, 20);
         }
 
         void SetActive(int id)
@@ -70,13 +80,19 @@ namespace HuntTheWumpus
                     n.OutlineThickness = 2;
 
                     if (Mouse.IsButtonPressed(Mouse.Button.Left))
+                    {
                         SetActive(n.Id);
+                        playerTween = new TweenVector2f(player.Position, n.Position + new Vector2f(-80, 20), 0.5f);
+                    }
                 }
                 else
                 {
                     n.OutlineThickness = 0;
                 }
             }
+
+            if (playerTween != null)
+                playerTween.Update(ref player,(float)dt);
         }
 
         public void Draw()
@@ -111,6 +127,8 @@ namespace HuntTheWumpus
                     }
                 }
             }
+
+            win.Draw(player);
         }
     }
 }
