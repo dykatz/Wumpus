@@ -11,7 +11,10 @@ namespace HuntTheWumpus
     {
         RenderWindow win;
         List<Node> Nodes = new List<Node>();
+        
         static Vector2f offset = new Vector2f(-50, 50);
+        static Random r = new Random(DateTime.Now.Second);
+
         int ActiveIndex = 0;
 
         public GameControl(RenderWindow win_)
@@ -46,7 +49,7 @@ namespace HuntTheWumpus
             foreach (var i in Nodes)
                 i.GenerateRandomConnections();
 
-            SetActive(1);
+            SetActive(r.Next(0, 29));
         }
 
         void SetActive(int id)
