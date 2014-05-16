@@ -56,7 +56,10 @@ namespace HuntTheWumpus
 
                     if (Mouse.IsButtonPressed(Mouse.Button.Left))
                     {
-                        backupPlayer.Position = new Vector2f(player.Position.X, player.Position.Y);
+                        if (backupTween.Active)
+                            backupTween.Active = false;
+
+                        backupPlayer.Position = player.Position;
                         Vector2f backupPlayerTarget = n.Position + new Vector2f(-80, 20);
 
                         if (ActiveIndex % 6 == 0 && n.Id % 6 == 5)
