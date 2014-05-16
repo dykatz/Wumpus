@@ -15,11 +15,11 @@ namespace HuntTheWumpus
         static Vector2f offset = new Vector2f(-50, 50);
         static Random r = new Random(DateTime.Now.Second);
 
-        CircleShape player = new CircleShape(30);
+        CircleShape player = new CircleShape(30), backupPlayer;
 
         int ActiveIndex = 0;
 
-        TweenVector2f playerTween;
+        TweenVector2f playerTween, backupTween;
 
         public GameControl(RenderWindow win_)
         {
@@ -34,6 +34,7 @@ namespace HuntTheWumpus
             player.OutlineThickness = 2;
             player.SetPointCount(5);
             player.Position = Nodes[ActiveIndex].Position + new Vector2f(-80, 20);
+            backupPlayer = new CircleShape(player);
         }
 
         void SetActive(int id)
@@ -47,24 +48,52 @@ namespace HuntTheWumpus
         {
             foreach (var n in Nodes[ActiveIndex].Connections)
             {
-                Vector2f distanceVector = new Vector2f(n.Position.X - Mouse.GetPosition(win).X - 50, n.Position.Y - Mouse.GetPosition(win).Y + 50);
+                Vector2f dv = new Vector2f(n.Position.X - Mouse.GetPosition(win).X - 50, n.Position.Y - Mouse.GetPosition(win).Y + 50);
                 
-                if (n.Radius * n.Radius > distanceVector.X * distanceVector.X + distanceVector.Y * distanceVector.Y)
+                if (n.Radius * n.Radius > dv.X * dv.X + dv.Y * dv.Y)
                 {
                     n.OutlineThickness = 2;
 
                     if (Mouse.IsButtonPressed(Mouse.Button.Left))
                     {
+                        backupPlayer.Position = new Vector2f(player.Position.X, player.Position.Y);
+                        Vector2f backupPlayerTarget = n.Position + new Vector2f(-80, 20);
+
+                        if (ActiveIndex % 6 == 0 && n.Id % 6 == 5)
+                        {
+                            backupPlayerTarget -= new Vector2f(740, 0);
+                            player.Position += new Vector2f(740, 0);
+                        }
+                        else if (ActiveIndex % 6 == 5 && n.Id % 6 == 0)
+                        {
+                            backupPlayerTarget += new Vector2f(740, 0);
+                            player.Position -= new Vector2f(740, 0);
+                        }
+
+                        if (ActiveIndex / 6 == 0 && n.Id / 6 == 4)
+                        {
+                            backupPlayerTarget -= new Vector2f(0, 600);
+                            player.Position += new Vector2f(0, 600);
+                        }
+                        else if (ActiveIndex / 6 == 4 && n.Id / 6 == 0)
+                        {
+                            backupPlayerTarget += new Vector2f(0, 600);
+                            player.Position -= new Vector2f(0, 600);
+                        }
+
+                        if (player.Position.X != backupPlayer.Position.X || player.Position.Y != backupPlayer.Position.Y)
+                            backupTween = new TweenVector2f(backupPlayer.Position, backupPlayerTarget, 1);
+
+                        playerTween = new TweenVector2f(player.Position, n.Position + new Vector2f(-80, 20), 1);
                         SetActive(n.Id);
-                        playerTween = new TweenVector2f(player.Position, n.Position + new Vector2f(-80, 20), 0.5f);
                     }
                 }
                 else
                     n.OutlineThickness = 0;
             }
 
-            if (playerTween != null)
-                playerTween.Update(ref player,(float)dt);
+            playerTween.Update(ref player, (float)dt);
+            backupTween.Update(ref backupPlayer, (float)dt);
         }
 
         public void Draw()
@@ -101,6 +130,9 @@ namespace HuntTheWumpus
             }
 
             win.Draw(player);
+
+            if (backupTween.Active)
+                win.Draw(backupPlayer);
         }
 
         void GenerateMap()
