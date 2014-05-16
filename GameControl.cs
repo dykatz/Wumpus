@@ -92,6 +92,7 @@ namespace HuntTheWumpus
 
                         playerTween = new TweenVector2f(player.Position, n.Position + new Vector2f(-80, 20), 1);
                         SetActive(n.Id);
+                        EnterNode(n.Id);
                     }
                 }
                 else
@@ -216,7 +217,7 @@ namespace HuntTheWumpus
             ushort numberOfHoles = 3;
             ushort numberOfBats = 3;
             ushort numberOfCoins = 8;
-            ushort numberOfArrows = 5;
+            ushort numberOfArrows = 3;
             List<Node> _nodes = new List<Node>(Nodes);
 
             do
@@ -269,6 +270,10 @@ namespace HuntTheWumpus
                 _nodes.RemoveAt(w);
                 numberOfCoins--;
             }
+        }
+
+        void EnterNode(int nodeId)
+        {
         }
     }
 }
