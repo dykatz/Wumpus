@@ -136,6 +136,11 @@ namespace HuntTheWumpus
                             c.FillColor = Color.Cyan;
                             win.Draw(c);
                             break;
+
+                        case (SpecialNode.Wumpus):
+                            c.FillColor = Color.Red;
+                            win.Draw(c);
+                            break;
                     }
                 }
             }
