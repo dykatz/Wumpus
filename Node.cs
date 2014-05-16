@@ -6,12 +6,15 @@ using SFML.Graphics;
 
 namespace HuntTheWumpus
 {
+    enum SpecialNode { None, Bats, Hole, Wumpus, PlayerSpawn, Arrow, Coin }
+
     class Node : CircleShape
     {
         public int Id;
         public List<Node> Neighbors = new List<Node>();
         public List<Node> Connections = new List<Node>();
         static Random r = new Random(DateTime.Now.Second);
+        public SpecialNode Specialty = SpecialNode.None;
         bool enabled = false;
         bool active = false;
         ushort openConnections = 3;

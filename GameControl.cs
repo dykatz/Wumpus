@@ -26,8 +26,11 @@ namespace HuntTheWumpus
             win = win_;
 
             GenerateMap();
-            
+
             SetActive(r.Next(0, 29));
+            Nodes[ActiveIndex].Specialty = SpecialNode.PlayerSpawn;
+
+            GenerateSpecialies();
 
             player.FillColor = Color.Blue;
             player.OutlineColor = Color.White;
@@ -102,7 +105,40 @@ namespace HuntTheWumpus
         public void Draw()
         {
             foreach (var i in Nodes)
+            {
                 win.Draw(i);
+
+                if (i.Enabled)
+                {
+                    CircleShape c = new CircleShape(20);
+                    c.OutlineThickness = 2;
+                    c.OutlineColor = Color.White;
+                    c.Position = i.Position + new Vector2f(-70, 30);
+
+                    switch (i.Specialty)
+                    {
+                        case (SpecialNode.Hole):
+                            c.FillColor = Color.Black;
+                            win.Draw(c);
+                            break;
+
+                        case (SpecialNode.Bats):
+                            c.FillColor = Color.Magenta;
+                            win.Draw(c);
+                            break;
+
+                        case (SpecialNode.Coin):
+                            c.FillColor = Color.Yellow;
+                            win.Draw(c);
+                            break;
+
+                        case (SpecialNode.Arrow):
+                            c.FillColor = Color.Cyan;
+                            win.Draw(c);
+                            break;
+                    }
+                }
+            }
 
             for (int i = 0; i < Nodes.Count; i++)
             {
@@ -167,6 +203,67 @@ namespace HuntTheWumpus
 
             foreach (var i in Nodes)
                 i.GenerateRandomConnections();
+        }
+
+        void GenerateSpecialies()
+        {
+            int w;
+            ushort numberOfHoles = 3;
+            ushort numberOfBats = 3;
+            ushort numberOfCoins = 8;
+            ushort numberOfArrows = 5;
+            List<Node> _nodes = new List<Node>(Nodes);
+
+            do
+                w = r.Next(0, _nodes.Count - 1);
+            while (Nodes[_nodes[w].Id].Specialty != SpecialNode.None);
+
+            Nodes[_nodes[w].Id].Specialty = SpecialNode.Wumpus;
+            _nodes.RemoveAt(w);
+
+            while (numberOfHoles > 0)
+            {
+                do
+                    w = r.Next(0, _nodes.Count - 1);
+                while (Nodes[_nodes[w].Id].Specialty != SpecialNode.None);
+
+                Nodes[_nodes[w].Id].Specialty = SpecialNode.Hole;
+                _nodes.RemoveAt(w);
+                numberOfHoles--;
+            }
+            
+            while (numberOfBats > 0)
+            {
+                do
+                    w = r.Next(0, _nodes.Count - 1);
+                while (Nodes[_nodes[w].Id].Specialty != SpecialNode.None);
+
+                Nodes[_nodes[w].Id].Specialty = SpecialNode.Bats;
+                _nodes.RemoveAt(w);
+                numberOfBats--;
+            }
+
+            while (numberOfArrows > 0)
+            {
+                do
+                    w = r.Next(0, _nodes.Count - 1);
+                while (Nodes[_nodes[w].Id].Specialty != SpecialNode.None);
+
+                Nodes[_nodes[w].Id].Specialty = SpecialNode.Arrow;
+                _nodes.RemoveAt(w);
+                numberOfArrows--;
+            }
+
+            while (numberOfCoins > 0)
+            {
+                do
+                    w = r.Next(0, _nodes.Count - 1);
+                while(Nodes[_nodes[w].Id].Specialty != SpecialNode.None);
+
+                Nodes[_nodes[w].Id].Specialty = SpecialNode.Coin;
+                _nodes.RemoveAt(w);
+                numberOfCoins--;
+            }
         }
     }
 }
