@@ -21,6 +21,8 @@ namespace HuntTheWumpus
 
         TweenVector2f playerTween, backupTween;
 
+        ushort arrows = 0, coins = 0;
+
         public GameControl(RenderWindow win_)
         {
             win = win_;
@@ -274,6 +276,11 @@ namespace HuntTheWumpus
 
         void EnterNode(int nodeId)
         {
+            if (Nodes[nodeId].Specialty == SpecialNode.Arrow && !Nodes[nodeId].Enabled)
+                arrows++;
+
+            if (Nodes[nodeId].Specialty == SpecialNode.Coin && !Nodes[nodeId].Enabled)
+                coins++;
         }
     }
 }
