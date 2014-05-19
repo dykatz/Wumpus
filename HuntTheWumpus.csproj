@@ -114,6 +114,11 @@
     <Content Include="Libraries\sfmlnet-graphics-2.dll" />
     <Content Include="Libraries\sfmlnet-window-2.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="sansation.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild" Condition="'$(Platform)' == 'x86'">
     <Copy SourceFiles="Libraries\x86\csfml-audio-2.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />

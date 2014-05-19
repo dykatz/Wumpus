@@ -23,6 +23,8 @@ namespace HuntTheWumpus
 
         ushort arrows = 0, coins = 0;
 
+        Font sensation = new Font("sansation.ttf");
+
         public GameControl(RenderWindow win_)
         {
             win = win_;
