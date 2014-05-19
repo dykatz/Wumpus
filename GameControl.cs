@@ -10,6 +10,7 @@ namespace HuntTheWumpus
     class GameControl
     {
         RenderWindow win;
+        RenderWindow scoreWin;
         List<Node> Nodes = new List<Node>();
         
         static Vector2f offset = new Vector2f(-50, 50);
@@ -23,11 +24,13 @@ namespace HuntTheWumpus
 
         ushort arrows = 0, coins = 0;
 
-        Font sensation = new Font("sansation.ttf");
+        Font sansation = new Font("sansation.ttf");
+        Text t_arrows = new Text(), t_coins = new Text(), t_score = new Text();
 
-        public GameControl(RenderWindow win_)
+        public GameControl(RenderWindow win_, RenderWindow scoreWin_)
         {
             win = win_;
+            scoreWin = scoreWin_;
 
             GenerateMap();
 
@@ -42,6 +45,16 @@ namespace HuntTheWumpus
             player.SetPointCount(5);
             player.Position = Nodes[ActiveIndex].Position + new Vector2f(-80, 20);
             backupPlayer = new CircleShape(player);
+
+            t_arrows.Font = sansation;
+            t_arrows.DisplayedString = "Arrows: 0";
+            t_arrows.Position = new Vector2f(5, 5);
+            t_coins.Font = sansation;
+            t_coins.DisplayedString = "Coins: 0";
+            t_coins.Position = new Vector2f(5, 30);
+            t_score.Font = sansation;
+            t_score.DisplayedString = "Score: 0";
+            t_score.Position = new Vector2f(5, 55);
         }
 
         void SetActive(int id)
@@ -94,9 +107,9 @@ namespace HuntTheWumpus
                         if (player.Position.X != backupPlayer.Position.X || player.Position.Y != backupPlayer.Position.Y)
                             backupTween = new TweenVector2f(backupPlayer.Position, backupPlayerTarget, 1);
 
+                        EnterNode(n.Id);
                         playerTween = new TweenVector2f(player.Position, n.Position + new Vector2f(-80, 20), 1);
                         SetActive(n.Id);
-                        EnterNode(n.Id);
                     }
                 }
                 else
@@ -182,6 +195,10 @@ namespace HuntTheWumpus
 
             if (backupTween.Active)
                 win.Draw(backupPlayer);
+
+            scoreWin.Draw(t_score);
+            scoreWin.Draw(t_coins);
+            scoreWin.Draw(t_arrows);
         }
 
         void GenerateMap()
@@ -279,10 +296,16 @@ namespace HuntTheWumpus
         void EnterNode(int nodeId)
         {
             if (Nodes[nodeId].Specialty == SpecialNode.Arrow && !Nodes[nodeId].Enabled)
+            {
                 arrows++;
+                t_arrows.DisplayedString = "Arrows: " + arrows;
+            }
 
             if (Nodes[nodeId].Specialty == SpecialNode.Coin && !Nodes[nodeId].Enabled)
+            {
                 coins++;
+                t_coins.DisplayedString = "Coins: " + coins;
+            }
         }
     }
 }

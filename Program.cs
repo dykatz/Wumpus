@@ -26,7 +26,7 @@ namespace HuntTheWumpus
             window.SetIcon(32, 32, image.Pixels);
             scoreWindow.SetIcon(32, 32, image.Pixels);
 
-            game = new GameControl(window);
+            game = new GameControl(window, scoreWindow);
 
             Stopwatch clock = new Stopwatch();
             clock.Start();
