@@ -23,6 +23,7 @@ namespace HuntTheWumpus
         TweenVector2f playerTween, backupTween;
 
         ushort arrows = 0, coins = 0;
+        uint score = 0;
 
         Font sansation = new Font("sansation.ttf");
         Text t_arrows = new Text(), t_coins = new Text(), t_score = new Text();
@@ -51,10 +52,10 @@ namespace HuntTheWumpus
             t_arrows.Position = new Vector2f(5, 5);
             t_coins.Font = sansation;
             t_coins.DisplayedString = "Coins: 0";
-            t_coins.Position = new Vector2f(5, 30);
+            t_coins.Position = new Vector2f(5, 35);
             t_score.Font = sansation;
             t_score.DisplayedString = "Score: 0";
-            t_score.Position = new Vector2f(5, 55);
+            t_score.Position = new Vector2f(5, 65);
         }
 
         void SetActive(int id)
@@ -114,6 +115,13 @@ namespace HuntTheWumpus
                         if (tempNode == n.Id)
                         {
                             playerTween = new TweenVector2f(player.Position, n.Position + new Vector2f(-80, 20), 1);
+
+                            if (!n.Enabled)
+                            {
+                                score += 15;
+                                t_score.DisplayedString = "Score: " + score;
+                            }
+
                             SetActive(n.Id);
                         }
                         else
