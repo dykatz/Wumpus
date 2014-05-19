@@ -107,9 +107,19 @@ namespace HuntTheWumpus
                         if (player.Position.X != backupPlayer.Position.X || player.Position.Y != backupPlayer.Position.Y)
                             backupTween = new TweenVector2f(backupPlayer.Position, backupPlayerTarget, 1);
 
-                        EnterNode(n.Id);
-                        playerTween = new TweenVector2f(player.Position, n.Position + new Vector2f(-80, 20), 1);
-                        SetActive(n.Id);
+                        int tempNode = n.Id;
+
+                        EnterNode(ref tempNode);
+
+                        if (tempNode == n.Id)
+                        {
+                            playerTween = new TweenVector2f(player.Position, n.Position + new Vector2f(-80, 20), 1);
+                            SetActive(n.Id);
+                        }
+                        else
+                        {
+                            n.Enabled = true;
+                        }
                     }
                 }
                 else
@@ -293,7 +303,7 @@ namespace HuntTheWumpus
             }
         }
 
-        void EnterNode(int nodeId)
+        void EnterNode(ref int nodeId)
         {
             if (Nodes[nodeId].Specialty == SpecialNode.Arrow && !Nodes[nodeId].Enabled)
             {
@@ -305,6 +315,24 @@ namespace HuntTheWumpus
             {
                 coins++;
                 t_coins.DisplayedString = "Coins: " + coins;
+            }
+
+            if (Nodes[nodeId].Specialty == SpecialNode.Bats && !Nodes[nodeId].Enabled)
+            {
+                if (coins > 0)
+                {
+                    coins--;
+                    t_coins.DisplayedString = "Coins: " + coins;
+                }
+
+                int id;
+                do
+                    id = r.Next(0, 29);
+                while(Nodes[id].Specialty != SpecialNode.None || id == ActiveIndex);
+
+                SetActive(id);
+                playerTween = new TweenVector2f(player.Position, Nodes[id].Position + new Vector2f(-80, 20), 1);
+                nodeId = id;
             }
         }
     }
