@@ -27,8 +27,9 @@ namespace HuntTheWumpus
 
         Font sansation = new Font("sansation.ttf");
         Text t_arrows = new Text(), t_coins = new Text(), t_score = new Text();
-
         CircleShape arrowShape;
+
+        bool isRepeat = true;
 
         public GameControl(RenderWindow win_, RenderWindow scoreWin_)
         {
@@ -139,21 +140,30 @@ namespace HuntTheWumpus
                 else
                     n.OutlineThickness = 0;
 
-                foreach (var j in Nodes[ActiveIndex].Connections)
+                if (isRepeat)
                 {
-                    Vector2f oPoint = new Vector2f(
-                        ActiveIndex % 6 == 0 & j.Id % 6 == 5 ? -720 : (ActiveIndex % 6 == 5 & j.Id % 6 == 0 ? 720 : 0),
-                        ActiveIndex / 6 == 0 & j.Id / 6 == 4 ? -600 : (ActiveIndex / 6 == 4 & j.Id / 6 == 0 ? 600 : 0));
+                    foreach (var j in Nodes[ActiveIndex].Connections)
+                    {
+                        Vector2f oPoint = new Vector2f(
+                            ActiveIndex % 6 == 0 & j.Id % 6 == 5 ? -720 : (ActiveIndex % 6 == 5 & j.Id % 6 == 0 ? 720 : 0),
+                            ActiveIndex / 6 == 0 & j.Id / 6 == 4 ? -600 : (ActiveIndex / 6 == 4 & j.Id / 6 == 0 ? 600 : 0));
 
-                    var tmp = Nodes[ActiveIndex].Position - j.Position + oPoint;
-                    var centerOffset = -20 * new Vector2f((float)Math.Cos(Math.Atan2(-tmp.X, tmp.Y)), (float)Math.Sin(Math.Atan2(-tmp.X, tmp.Y)));
-                    arrowShape.Position = tmp / 2 + j.Position + offset + centerOffset;
-                    arrowShape.Rotation = (float)Math.Atan2(-tmp.X, tmp.Y) * (float)(180 / Math.PI);
+                        var tmp = Nodes[ActiveIndex].Position - j.Position + oPoint;
+                        var centerOffset = -20 * new Vector2f((float)Math.Cos(Math.Atan2(-tmp.X, tmp.Y)), (float)Math.Sin(Math.Atan2(-tmp.X, tmp.Y)));
+                        arrowShape.Position = tmp / 2 + j.Position + offset + centerOffset;
+                        arrowShape.Rotation = (float)Math.Atan2(-tmp.X, tmp.Y) * (float)(180 / Math.PI);
 
-                    var mrt = arrowShape.Position - centerOffset - new Vector2f(Mouse.GetPosition(win).X, Mouse.GetPosition(win).Y);
-                    if (mrt.X * mrt.X + mrt.Y * mrt.Y <= arrowShape.Radius * arrowShape.Radius && Mouse.IsButtonPressed(Mouse.Button.Left))
-                        ShootArrow(j.Id);
+                        var mrt = arrowShape.Position - centerOffset - new Vector2f(Mouse.GetPosition(win).X, Mouse.GetPosition(win).Y);
+                        if (mrt.X * mrt.X + mrt.Y * mrt.Y <= arrowShape.Radius * arrowShape.Radius && Mouse.IsButtonPressed(Mouse.Button.Left))
+                        {
+                            ShootArrow(j.Id);
+                            isRepeat = false;
+                        }
+                    }
                 }
+
+                if (!Mouse.IsButtonPressed(Mouse.Button.Left))
+                    isRepeat = true;
             }
 
             playerTween.Update(ref player, (float)dt);
