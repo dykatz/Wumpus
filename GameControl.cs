@@ -138,6 +138,22 @@ namespace HuntTheWumpus
                 }
                 else
                     n.OutlineThickness = 0;
+
+                foreach (var j in Nodes[ActiveIndex].Connections)
+                {
+                    Vector2f oPoint = new Vector2f(
+                        ActiveIndex % 6 == 0 & j.Id % 6 == 5 ? -720 : (ActiveIndex % 6 == 5 & j.Id % 6 == 0 ? 720 : 0),
+                        ActiveIndex / 6 == 0 & j.Id / 6 == 4 ? -600 : (ActiveIndex / 6 == 4 & j.Id / 6 == 0 ? 600 : 0));
+
+                    var tmp = Nodes[ActiveIndex].Position - j.Position + oPoint;
+                    var centerOffset = -20 * new Vector2f((float)Math.Cos(Math.Atan2(-tmp.X, tmp.Y)), (float)Math.Sin(Math.Atan2(-tmp.X, tmp.Y)));
+                    arrowShape.Position = tmp / 2 + j.Position + offset + centerOffset;
+                    arrowShape.Rotation = (float)Math.Atan2(-tmp.X, tmp.Y) * (float)(180 / Math.PI);
+
+                    var mrt = arrowShape.Position - centerOffset - new Vector2f(Mouse.GetPosition(win).X, Mouse.GetPosition(win).Y);
+                    if (mrt.X * mrt.X + mrt.Y * mrt.Y <= arrowShape.Radius * arrowShape.Radius && Mouse.IsButtonPressed(Mouse.Button.Left))
+                        ShootArrow(j.Id);
+                }
             }
 
             playerTween.Update(ref player, (float)dt);
@@ -214,7 +230,7 @@ namespace HuntTheWumpus
 
                         if (Nodes[i].Active)
                         {
-                            var tmp = Nodes[i].Position - j.Position;
+                            var tmp = Nodes[i].Position - j.Position + oPoint;
                             var centerOffset = -20 * new Vector2f((float)Math.Cos(Math.Atan2(-tmp.X, tmp.Y)), (float)Math.Sin(Math.Atan2(-tmp.X, tmp.Y)));
                             arrowShape.Position = tmp / 2 + j.Position + offset + centerOffset;
                             arrowShape.Rotation = (float)Math.Atan2(-tmp.X, tmp.Y) * (float)(180 / Math.PI);
@@ -368,20 +384,24 @@ namespace HuntTheWumpus
 
         void ShootArrow(int to)
         {
-            if (Nodes[to].Specialty == SpecialNode.Wumpus)
+            if (arrows > 0)
             {
-                // Game over - win
-            }
-            else if (Nodes[to].Specialty == SpecialNode.Bats)
-            {
-                Nodes[to].Specialty = SpecialNode.None;
-            }
-            else if (Nodes[to].Specialty == (SpecialNode.None | SpecialNode.PlayerSpawn))
-            {
-                // Game over - lose
-            }
+                if (Nodes[to].Specialty == SpecialNode.Wumpus)
+                {
+                    // Game over - win
+                }
+                else if (Nodes[to].Specialty == SpecialNode.Bats)
+                {
+                    Nodes[to].Specialty = SpecialNode.None;
+                }
+                else if (Nodes[to].Specialty == (SpecialNode.None | SpecialNode.PlayerSpawn))
+                {
+                    // Game over - lose
+                }
 
-            arrows--;
+                arrows--;
+                t_arrows.DisplayedString = "Arrows: " + arrows;
+            }
         }
     }
 }
