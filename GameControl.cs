@@ -28,6 +28,8 @@ namespace HuntTheWumpus
         Font sansation = new Font("sansation.ttf");
         Text t_arrows = new Text(), t_coins = new Text(), t_score = new Text();
 
+        CircleShape arrowShape;
+
         public GameControl(RenderWindow win_, RenderWindow scoreWin_)
         {
             win = win_;
@@ -56,6 +58,10 @@ namespace HuntTheWumpus
             t_score.Font = sansation;
             t_score.DisplayedString = "Score: 0";
             t_score.Position = new Vector2f(5, 65);
+
+            arrowShape = new CircleShape(20, 3);
+            arrowShape.FillColor = Color.Cyan;
+            arrowShape.OutlineColor = Color.White;
         }
 
         void SetActive(int id)
@@ -205,6 +211,22 @@ namespace HuntTheWumpus
                         }
 
                         win.Draw(ar, PrimitiveType.Lines);
+
+                        if (Nodes[i].Active)
+                        {
+                            var tmp = Nodes[i].Position - j.Position;
+                            var centerOffset = -20 * new Vector2f((float)Math.Cos(Math.Atan2(-tmp.X, tmp.Y)), (float)Math.Sin(Math.Atan2(-tmp.X, tmp.Y)));
+                            arrowShape.Position = tmp / 2 + j.Position + offset + centerOffset;
+                            arrowShape.Rotation = (float)Math.Atan2(-tmp.X, tmp.Y) * (float)(180 / Math.PI);
+
+                            var mrt = arrowShape.Position - centerOffset - new Vector2f(Mouse.GetPosition(win).X, Mouse.GetPosition(win).Y);
+                            if (mrt.X * mrt.X + mrt.Y * mrt.Y <= arrowShape.Radius * arrowShape.Radius)
+                                arrowShape.OutlineThickness = 2;
+                            else
+                                arrowShape.OutlineThickness = 0;
+
+                            win.Draw(arrowShape);
+                        }
                     }
                 }
             }
@@ -342,6 +364,24 @@ namespace HuntTheWumpus
                 playerTween = new TweenVector2f(player.Position, Nodes[id].Position + new Vector2f(-80, 20), 1);
                 nodeId = id;
             }
+        }
+
+        void ShootArrow(int to)
+        {
+            if (Nodes[to].Specialty == SpecialNode.Wumpus)
+            {
+                // Game over - win
+            }
+            else if (Nodes[to].Specialty == SpecialNode.Bats)
+            {
+                Nodes[to].Specialty = SpecialNode.None;
+            }
+            else if (Nodes[to].Specialty == (SpecialNode.None | SpecialNode.PlayerSpawn))
+            {
+                // Game over - lose
+            }
+
+            arrows--;
         }
     }
 }
