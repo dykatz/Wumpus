@@ -37,9 +37,6 @@ namespace HuntTheWumpus
                 dt = (double)clock.Elapsed.Milliseconds / 100.0;
                 clock.Restart();
 
-                window.DispatchEvents();
-                scoreWindow.DispatchEvents();
-
                 if (current == GameState.InGame) // Update code
                     game.Update(dt);
 
@@ -51,7 +48,12 @@ namespace HuntTheWumpus
 
                 window.Display();
                 scoreWindow.Display();
+
+                window.DispatchEvents();
+                scoreWindow.DispatchEvents();
             }
+
+            Environment.Exit(0);
         }
 
         static void OnClosed(object sender, EventArgs e)

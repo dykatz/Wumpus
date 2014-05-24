@@ -26,10 +26,13 @@ namespace HuntTheWumpus
         uint score = 0;
 
         Font sansation = new Font("sansation.ttf");
-        Text t_arrows = new Text(), t_coins = new Text(), t_score = new Text();
+        Text t_arrows = new Text(), t_coins = new Text(), t_score = new Text(), t_buyArrows = new Text();
         CircleShape arrowShape;
 
-        bool isRepeat = true;
+        RectangleShape buyArrowsButton = new RectangleShape(new Vector2f(190, 40));
+
+        bool isMouseRepeat = true;
+        bool isInArrowShop = false;
 
         public GameControl(RenderWindow win_, RenderWindow scoreWin_)
         {
@@ -59,10 +62,17 @@ namespace HuntTheWumpus
             t_score.Font = sansation;
             t_score.DisplayedString = "Score: 0";
             t_score.Position = new Vector2f(5, 65);
+            t_buyArrows.Font = sansation;
+            t_buyArrows.DisplayedString = "Buy Arrows";
+            t_buyArrows.Position = new Vector2f(10, 105);
 
             arrowShape = new CircleShape(20, 3);
             arrowShape.FillColor = Color.Cyan;
             arrowShape.OutlineColor = Color.White;
+
+            buyArrowsButton.Position = new Vector2f(5, 105);
+            buyArrowsButton.FillColor = Color.Green;
+            buyArrowsButton.OutlineColor = Color.White;
         }
 
         void SetActive(int id)
@@ -140,7 +150,7 @@ namespace HuntTheWumpus
                 else
                     n.OutlineThickness = 0;
 
-                if (isRepeat)
+                if (isMouseRepeat)
                 {
                     foreach (var j in Nodes[ActiveIndex].Connections)
                     {
@@ -157,13 +167,13 @@ namespace HuntTheWumpus
                         if (mrt.X * mrt.X + mrt.Y * mrt.Y <= arrowShape.Radius * arrowShape.Radius && Mouse.IsButtonPressed(Mouse.Button.Left))
                         {
                             ShootArrow(j.Id);
-                            isRepeat = false;
+                            isMouseRepeat = false;
                         }
                     }
                 }
 
                 if (!Mouse.IsButtonPressed(Mouse.Button.Left))
-                    isRepeat = true;
+                    isMouseRepeat = true;
             }
 
             playerTween.Update(ref player, (float)dt);
@@ -265,6 +275,12 @@ namespace HuntTheWumpus
             scoreWin.Draw(t_score);
             scoreWin.Draw(t_coins);
             scoreWin.Draw(t_arrows);
+
+            if (!isInArrowShop)
+            {
+                scoreWin.Draw(buyArrowsButton);
+                scoreWin.Draw(t_buyArrows);
+            }
         }
 
         void GenerateMap()
