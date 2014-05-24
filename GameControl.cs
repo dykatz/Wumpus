@@ -84,15 +84,16 @@ namespace HuntTheWumpus
 
         public void Update(double dt)
         {
+            bool isMouseReleased = isMouseRepeat && !Mouse.IsButtonPressed(Mouse.Button.Left);
             foreach (var n in Nodes[ActiveIndex].Connections)
             {
                 Vector2f dv = new Vector2f(n.Position.X - Mouse.GetPosition(win).X - 50, n.Position.Y - Mouse.GetPosition(win).Y + 50);
-                
+
                 if (n.Radius * n.Radius > dv.X * dv.X + dv.Y * dv.Y)
                 {
                     n.OutlineThickness = 2;
 
-                    if (Mouse.IsButtonPressed(Mouse.Button.Left))
+                    if (isMouseReleased)
                     {
                         if (backupTween.Active)
                             backupTween.Active = false;
@@ -148,9 +149,11 @@ namespace HuntTheWumpus
                     }
                 }
                 else
+                {
                     n.OutlineThickness = 0;
+                }
 
-                if (isMouseRepeat)
+                if (isMouseReleased)
                 {
                     foreach (var j in Nodes[ActiveIndex].Connections)
                     {
@@ -162,27 +165,31 @@ namespace HuntTheWumpus
                         var centerOffset = -20 * new Vector2f((float)Math.Cos(Math.Atan2(-tmp.X, tmp.Y)), (float)Math.Sin(Math.Atan2(-tmp.X, tmp.Y)));
                         arrowShape.Position = tmp / 2 + j.Position + offset + centerOffset;
                         arrowShape.Rotation = (float)Math.Atan2(-tmp.X, tmp.Y) * (float)(180 / Math.PI);
-
                         var mrt = arrowShape.Position - centerOffset - new Vector2f(Mouse.GetPosition(win).X, Mouse.GetPosition(win).Y);
-                        if (mrt.X * mrt.X + mrt.Y * mrt.Y <= arrowShape.Radius * arrowShape.Radius && Mouse.IsButtonPressed(Mouse.Button.Left))
-                        {
+
+                        if (mrt.X * mrt.X + mrt.Y * mrt.Y <= arrowShape.Radius * arrowShape.Radius)
                             ShootArrow(j.Id);
-                            isMouseRepeat = false;
-                        }
                     }
                 }
 
-                Vector2i mp_sw = Mouse.GetPosition(scoreWin);
-                if (mp_sw.X > buyArrowsButton.Position.X && mp_sw.X < buyArrowsButton.Position.X + buyArrowsButton.Size.X &&
-                    mp_sw.Y > buyArrowsButton.Position.Y && mp_sw.Y < buyArrowsButton.Position.Y + buyArrowsButton.Size.Y)
+                if (!isInArrowShop)
                 {
-                    buyArrowsButton.OutlineThickness = 2;
-                }
-                else
-                    buyArrowsButton.OutlineThickness = 0;
+                    Vector2i mp_sw = Mouse.GetPosition(scoreWin);
+                    if (mp_sw.X > buyArrowsButton.Position.X && mp_sw.X < buyArrowsButton.Position.X + buyArrowsButton.Size.X &&
+                        mp_sw.Y > buyArrowsButton.Position.Y && mp_sw.Y < buyArrowsButton.Position.Y + buyArrowsButton.Size.Y)
+                    {
+                        buyArrowsButton.OutlineThickness = 2;
 
-                if (!Mouse.IsButtonPressed(Mouse.Button.Left))
-                    isMouseRepeat = true;
+                        if (isMouseReleased)
+                            isInArrowShop = true;
+                    }
+                    else
+                    {
+                        buyArrowsButton.OutlineThickness = 0;
+                    }
+                }
+
+                isMouseRepeat = Mouse.IsButtonPressed(Mouse.Button.Left);
             }
 
             playerTween.Update(ref player, (float)dt);
