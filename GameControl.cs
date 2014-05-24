@@ -172,6 +172,15 @@ namespace HuntTheWumpus
                     }
                 }
 
+                Vector2i mp_sw = Mouse.GetPosition(scoreWin);
+                if (mp_sw.X > buyArrowsButton.Position.X && mp_sw.X < buyArrowsButton.Position.X + buyArrowsButton.Size.X &&
+                    mp_sw.Y > buyArrowsButton.Position.Y && mp_sw.Y < buyArrowsButton.Position.Y + buyArrowsButton.Size.Y)
+                {
+                    buyArrowsButton.OutlineThickness = 2;
+                }
+                else
+                    buyArrowsButton.OutlineThickness = 0;
+
                 if (!Mouse.IsButtonPressed(Mouse.Button.Left))
                     isMouseRepeat = true;
             }
